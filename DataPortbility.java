@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,18 +27,14 @@ public class DataPortbility {
 	/**
 	 * Main method of the program. Calls methods for reading the tables and finding the searched phrase
 	 * @param args String path to the dump file
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		List<Table> tables = new ArrayList<Table>();
-		String path ="C:/Users/mikul/Documents/PROJEKT/backup.sql";
-		//String path = "C:/Users/mikul/Desktop/studAdmin_backup.sql";
-		// String path = "C:/Users/mikul/Desktop/prim.sql";
-		// String path = "C:/Users/mikul/Desktop/proba.sql";
-		// String path = "C:/Users/mikul/Documents/PROJEKT/gdpr.sql";
-		//String path = args[0];
-
+		String path = args[0];
+		
 		readTables(path, tables);
-
+				
 		find(tables);
 
 		System.out.println("Program End");
@@ -69,7 +66,6 @@ public class DataPortbility {
 			String line;
 			Table table = new Table();
 			while ((line = bufferedReader.readLine()) != null) {
-
 				String[] words = line.split("[(\\s\\)]");
 
 				if (words[0].equals("CREATE") && words[1].equals("TABLE")) {
@@ -117,7 +113,6 @@ public class DataPortbility {
 				if (Arrays.asList(words).contains("INSERT")) {
 					tName = clean(words[2]);
 				}
-
 				List<String> values = new ArrayList<String>();
 				if (Arrays.asList(words).contains("VALUES")) {
 					boolean end = false;
@@ -128,7 +123,7 @@ public class DataPortbility {
 					}
 					if (!tmp.equals("")) {
 						try {
-							if (tmp.substring(tmp.length() - 1).equals(";")) {
+							if (tmp.substring(tmp.length() - 2).equals(");")) {
 								end = true;
 							}
 						} catch (StringIndexOutOfBoundsException e) {
@@ -136,7 +131,9 @@ public class DataPortbility {
 						}
 						try {
 							for (Table tab : tables) {
+								System.out.println("tab");
 								if (tab.getTableName().equals(tName)) {
+									System.out.println("dodajem");
 									tab.addValue(tmp.substring(1, tmp.length() - 1));
 									break;
 								}
@@ -150,7 +147,7 @@ public class DataPortbility {
 						while ((line = bufferedReader.readLine()) != null) {
 
 							try {
-								if (line.substring(line.length() - 1).equals(";")) {
+								if (line.substring(line.length() - 2).equals(");")) {
 									end = true;
 								}
 							} catch (StringIndexOutOfBoundsException e) {
@@ -313,7 +310,7 @@ public class DataPortbility {
 		System.out.println("Creating PDF Document...");
 		Document document = new Document();
 		try {
-		BaseFont arial = BaseFont.createFont("c:\\windows\\fonts\\arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+		BaseFont arial = BaseFont.createFont("arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 		Font NormalFont = new com.itextpdf.text.Font(arial, 12, Font.NORMAL);
 		Font boldFont = new com.itextpdf.text.Font(arial, 12, Font.BOLD);
 		try {

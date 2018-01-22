@@ -108,7 +108,7 @@ public class Table {
 	public List<String> find( String query){
 		List<String> result = new ArrayList<String>();		
 		for (String row : values) {
-			if (row.matches("(?i).*\\b" + query + "\\b.*")){
+			if (row.toLowerCase().matches(".*\\b" + query.toLowerCase() + "\\b.*")){
 				List<String> sepVal = new ArrayList<String>();
 	            String value = "";
 	            boolean ignore = false;
